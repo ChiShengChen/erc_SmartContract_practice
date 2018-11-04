@@ -5,7 +5,7 @@ pragma solidity ^0.4.24;
 // import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";  
 // import 'zeppelin-solidity/contracts/token/ERC20/MintableToken.sol';
 import "zeppelin-solidity/contracts/lifecycle/Pausable.sol";
-// import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 /* Owned Contract */
 contract Owned {
@@ -17,16 +17,16 @@ contract Owned {
 
 
 /* ERC20 contract interface */
-contract ERC20 {
-    function totalSupply() public constant returns (uint);
-    function balanceOf(address tokenOwner) public constant returns (uint balance);
-    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);
-    function transfer(address to, uint tokens) public returns (bool success);
-    function approve(address spender, uint tokens) public returns (bool success);
-    function transferFrom(address from, address to, uint tokens) public returns (bool success);
-    event Transfer(address indexed from, address indexed to, uint tokens);
-    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
-}
+// contract ERC20 {
+//     function totalSupply() public constant returns (uint);
+//     function balanceOf(address tokenOwner) public constant returns (uint balance);
+//     function allowance(address tokenOwner, address spender) public constant returns (uint remaining);
+//     function transfer(address to, uint tokens) public returns (bool success);
+//     function approve(address spender, uint tokens) public returns (bool success);
+//     function transferFrom(address from, address to, uint tokens) public returns (bool success);
+//     event Transfer(address indexed from, address indexed to, uint tokens);
+//     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+// }
 
 
 

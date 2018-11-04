@@ -1,5 +1,5 @@
-var TutorialToken = artifacts.require("./TutorialToken.sol");
+var OrderEscrow = artifacts.require("./OrderEscrow.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(TutorialToken);
+  deployer.deploy(OrderEscrow);
 };
