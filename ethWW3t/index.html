@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <!-- <script src="./node_modules/web3/dist/web3.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js" integrity="sha256-nWBTbvxhJgjslRyuAKJHK+XcZPlCnmIAAMixz6EefVk="
+        crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Contract Escrow</h1>
+
+        <!-- <h2 id="info"></h2> -->
+
+        <label for="name" class="col-lg-2 control-label">
+            account1(seller):
+        </label>
+        <input id="address1Seller" type="text" readonly>
+
+        <label for="name" class="col-lg-2 control-label">
+            account2(buyer):
+        </label>
+        <input id="address1Buyer" type="text" readonly>
+
+        <label for="name" class="col-lg-2 control-label">
+            TokenName:
+        </label>
+        <input id="TokenName" type="text" value="mw">
+
+        <label for="name" class="col-lg-2 control-label">
+            TokenAddr:
+        </label>
+        <input id="TokenAddr" type="text" value="0x1d36e299a68306270f2dd807a81fe2a041601108">
+
+        <label for="name" class="col-lg-2 control-label">
+            OrderID:
+        </label>
+        <input id="OrderID" type="text" value="m0" readonly>
+
+        <label for="name" class="col-lg-2 control-label">
+            LockedAmount:
+        </label>
+        <input id="LockedAmount" type="number" min=0>
+        <button id="makeOrderBtn" onclick="makeOrder(), timedCount()">
+            MakeOrder
+        </button>
+
+        <form>
+        <!-- <input type="button" value="開始計時！" onClick="timedCount()"> -->
+        <h3>remaining time(s):</h3>
+        <input type="text" id="txt">
+        <!-- <input type="button" value="停止計時！" onClick="stopCount()"> -->
+        </form>
+
+
+
+        <!-- <label for="name" class="col-lg-2 control-label">
+                BuyerBalance:
+            </label>
+            <input id="BuyerBalance" type="number">
+
+            <button id="button1" onclick="DoTransaction()">
+                transaction
+            </button> -->
+
+        <hr>
+        <hr>
+
+        <h3>for buyer</h3>
+        <!-- only for testing -->
+        <button id="button6" onclick="switch2Buyer()">
+            I'm buyer
+        </button>
+        <!-- endTesting btns -->
+        <button id="button2" onclick="setPaid()">
+            payed
+        </button>
+
+        <hr>
+
+        <h3>for seller</h3>
+         <!-- only for testing -->
+        <button id="button5" onclick="switch2Owner()">
+            I'm owner
+        </button>
+        <!-- endTesting btns -->
+        <label for="name" class="col-lg-2 control-label">
+            Seller:
+        </label>
+        <input id="address1Seller" type="text" value="0x9909d3Cd86D105E8151dbbF24a7DbB63a053bC78">
+
+        <label for="name" class="col-lg-2 control-label">
+            Buyer:
+        </label>
+        <input id="address1Buyer" type="text" value="0xd1Bb6ccB132Fb05542dfbf9875947c03aCcec35C">
+
+        <label for="name" class="col-lg-2 control-label">
+            TokenName:
+        </label>
+        <input id="TokenName" type="text" value="mw">
+
+        <label for="name" class="col-lg-2 control-label">
+            TokenAddr:
+        </label>
+        <input id="TokenAddr" type="text" value="0x1d36e299a68306270f2dd807a81fe2a041601108">
+
+        <label for="name" class="col-lg-2 control-label">
+            OrderID:
+        </label>
+        <input id="OrderID" type="text" value="m0" readonly>
+
+        <label for="name" class="col-lg-2 control-label">
+            LockedAmount:
+        </label>
+        <input id="LockedAmount" type="text">
+
+        <button id="button3" onclick="confirmOrder()">
+            received comfirm
+        </button>
+
+        <hr>
+        <h3>for cancel:</h3>
+        <!-- only for testing -->
+        <button id="button5" onclick="switch2Owner()">
+            I'm owner
+        </button>
+        <button id="button6" onclick="switch2Buyer()">
+            I'm buyer
+        </button>
+        <!-- endTesting btns -->
+
+        <label for="name" class="col-lg-2 control-label">
+            Canceler:
+        </label>
+        <input id="Canceler" type="text">
+
+        <label for="name" class="col-lg-2 control-label">
+            Seller:
+        </label>
+        <input id="address1Seller" type="text" value="0x9909d3Cd86D105E8151dbbF24a7DbB63a053bC78">
+
+        <label for="name" class="col-lg-2 control-label">
+            TokenName:
+        </label>
+        <input id="TokenName" type="text" value="mw">
+
+        <label for="name" class="col-lg-2 control-label">
+            TokenAddr:
+        </label>
+        <input id="TokenAddr" type="text" value="0x1d36e299a68306270f2dd807a81fe2a041601108">
+
+        <label for="name" class="col-lg-2 control-label">
+            OrderID:
+        </label>
+        <input id="OrderID" type="text" value="m0" readonly>
+
+        <label for="name" class="col-lg-2 control-label">
+            LockedAmount:
+        </label>
+        <input id="LockedAmount" type="text">
+
+
+        <button id="button4" onclick="cancelOrder()">
+            concel order
+        </button>
+
+<!--         <hr>
+        <hr>
+        <br>
+
+        <h3>locked tokens: </h3>
+        <input id="LockedTokens" type="number">
+        <h3>remaining time: </h3>
+        <input id="RemainingTime" type="number"> -->
+
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <!-- timer要用 -->
+<!--     <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    <script type='text/javascript' language='javascript'>
+        google.load('jquery', '1.4.3');
+    </script> -->
+
+    <script type="text/javascript">
+        // $(document).ready(function () {
+        if (typeof web3 !== 'undefined') {
+            console.log("Using web3 detected from external source like Metamask");
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            console.log("Using localhost");
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+        let eth = web3.eth;
+        let escrow = new web3.eth.Contract(
+            [
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "cancelOrder",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "confirmOrder",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "makeOrder",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_newOwner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "setOwner",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "setPaid",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "constructor"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "TokenRegister",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_status",
+                            "type": "uint8"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "MakeOrder",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "name": "_canceler",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_status",
+                            "type": "uint8"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "CancelOrder",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_status",
+                            "type": "uint8"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "ConfirmOrder",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": true,
+                            "name": "old",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "current",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "OwnerChanged",
+                    "type": "event"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "getContractAddress",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "getOrderData",
+                    "outputs": [
+                        {
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "_lockedTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "_status",
+                            "type": "uint8"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "ORDER_SESSION",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "orderIsExisted",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ], '0xe8cd072281076623c2fdcede0ad6b4e15b3eb650');
+
+        console.log(escrow)
+        eth.getAccounts().then(accounts => {
+            
+            $("#address1Seller").val(accounts[0]);
+            $("#address1Buyer").val(accounts[1]);
+        })
+
+        var address;
+
+        function makeOrder() {
+            let seller =$('#address1Seller').val();
+            let buyer = $('#address1Buyer').val();
+            let tokenName = $('#TokenName').val();
+            let tokenAddr = $('#TokenAddr').val();
+            let orderID = $('#OrderID').val();
+            let lockedAmount = $('#LockedAmount').val();
+
+            var address =  $('#address1Seller').val();
+            console.log(buyer, tokenName, tokenAddr, orderID, lockedAmount, address);
+
+
+            escrow.methods.makeOrder(buyer, tokenName, tokenAddr, orderID, lockedAmount).send({
+                // from: $("#address1Seller").val(),
+                from: address,
+                gas: 300000
+            })
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+                .on('error', err => {
+                    console.log(err);
+                })
+
+
+            // escrow.methods.getOrderData().call(
+            // {
+            //     from: $("#address1Seller").val(),
+            //     gas: 3000000
+            // })
+                console.log("exe to here~testing~")
+        }
+
+
+        //倒數7200秒
+        var c=7200
+        var t
+        function timedCount() {
+            document.getElementById('txt').value=c
+            c=c-1
+            t=setTimeout("timedCount()",1000)
+        }
+
+        function stopCount() {
+            c=0;
+            setTimeout("document.getElementById('txt').value=0",0);
+            clearTimeout(t);
+        }
+
+        function cancelOrder() {
+            let canceler = $('#Canceler').val();
+            let seller = $('#address1Seller').val();
+            let tokenName = $('#TokenName').val();
+            let tokenAddr = $('#TokenAddr').val();
+            let orderID = $('#OrderID').val();
+            let lockedAmount = $('#LockedAmount').val();
+
+            console.log(canceler, seller, tokenName, tokenAddr, orderID)
+
+            escrow.methods.cancelOrder().send(
+            {
+                from: $("#Canceler").val(),
+                // from: address,
+                gas: 300000                
+            })
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+                
+                .on('error', err => {
+                    console.log(err);
+                })
+        }
+
+
+        function setPaid() {
+            // console.log("454dfdfr")
+            // console.log(order.status)
+
+            escrow.methods.setPaid().send(
+            {
+                from: $("#address1Buyer").val(),
+                // from: address,
+                gas: 300000                
+            })
+
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+               
+                .on('error', err => {
+                    console.log(err);
+                })
+
+            // console.log(order.status)
+        }
+
+
+        function confirmOrder() {
+            let seller =$('#address1Seller').val();
+            let buyer = $('#address1Buyer').val();
+            let tokenName = $('#TokenName').val();
+            let tokenAddr = $('#TokenAddr').val();
+            let orderID = $('#OrderID').val();
+            let lockedAmount = $('#LockedAmount').val();
+
+            console.log(seller, buyer, tokenName, tokenAddr, orderID)
+
+            escrow.methods.confirmOrder().send(
+            {
+                from: $("#address1Seller").val(),
+                // from: address,
+                gas: 300000                
+            })
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+                .on('cancelStatus', cancelStatus => {
+                    // console.log(cancelStatus)
+                })
+                .on('error', err => {
+                    console.log(err);
+                })
+        }
+
+
+
+
+        function switch2Owner() {  
+
+            // 原本按網頁時身分是啥?
+
+            // var address =  eth.getAccounts(accounts[0]);
+             var address =  $('#address1Seller').val();
+            console.log(address);
+
+        }
+
+
+        function switch2Buyer() {
+
+            // var address =  eth.getAccounts(eth.accounts[1]);
+             var address =  $('#address1Buyer').val();
+            console.log(address);
+
+        }
+
+    </script>
+    <!-- <script>
+    // web3 get providers from metamask 
+
+    console.log("XX");
+    if (typeof web3 !== 'undefined') {
+        console.log("Using web3 detected from external source like Metamask");
+        web3 = new Web3(web3.currentProvider);
+    } else {
+        // set the provider you want from Web3.providers
+        console.log("Using localhost");
+        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    }
+
+    web3.eth.defaultAccount = web3.eth.accounts[defaultAccount];
+
+
+
+    // var infoContract = web3.eth.contract([
+    // {
+    let escrow = new web3.eth.Contract(
+    [{    
+        "constant": false,
+        "inputs": [
+            {
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "name": "tokens",
+                "type": "uint256"
+            }
+        ],
+        "name": "approve",
+        "outputs": [
+            {
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "name": "tokens",
+                "type": "uint256"
+            }
+        ],
+        "name": "transferFrom",
+        "outputs": [
+            {
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "tokenOwner",
+                "type": "address"
+            }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+            {
+                "name": "balance",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "name": "tokens",
+                "type": "uint256"
+            }
+        ],
+        "name": "transfer",
+        "outputs": [
+            {
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "tokenOwner",
+                "type": "address"
+            },
+            {
+                "name": "spender",
+                "type": "address"
+            }
+        ],
+        "name": "allowance",
+        "outputs": [
+            {
+                "name": "remaining",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "tokens",
+                "type": "uint256"
+            }
+        ],
+        "name": "Transfer",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "tokenOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "tokens",
+                "type": "uint256"
+            }
+        ],
+        "name": "Approval",
+        "type": "event"
+    }
+],  
+
+'0x9ab48ffa77d1ce9131041ea9cd37cc7343db3874');
+
+
+let TutorialToken = new web3.eth.Contract(
+    [{
+  "contractName": "TutorialToken",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_spender",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+      "inputs": [
+        {
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "INITIAL_SUPPLY",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_spender",
+          "type": "address"
+        },
+        {
+          "name": "_subtractedValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "decreaseApproval",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_spender",
+          "type": "address"
+        },
+        {
+          "name": "_addedValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "increaseApproval",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_spender",
+          "type": "address"
+        }
+      ],
+      "name": "allowance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    }
+  ],
+  
+ 
+}],  
+
+'0x9ab48ffa77d1ce9131041ea9cd37cc7343db3874');
+
+//////////////////////////////////////////////
+    //contract addr
+    // var info = InfoContract.at('');
+
+    escrowAccount = escrow.options.address;
+    sellerAddress = web3.eth.accounts[0];
+    buyerAddress = web3.eth.accounts[1];
+    
+    console.log(escrowAccountr)
+    // escrow.methods.getContractAddress().call().then(console.log);
+    
+    //把值丟到前端
+    var address1Seller = document.getElementById("address1Seller");
+    address1Seller.value = sellerAddress;
+    //get balance
+    var SellerBalance = document.getElementById("SellerBalance");
+    var sbalance = web3.eth.getBalance(web3.eth.accounts[0]); 
+    sbalance = web3.toDecimal(sbalance);
+    SellerBalance.value = sbalance;
+
+    var address2Buyer = document.getElementById("address2Buyer");
+    address2Buyer.value =  buyerAddress;
+    //get balance
+    var BuyerBalance = document.getElementById("BuyerBalance");
+    var bbalance = web3.eth.getBalance(web3.eth.accounts[1]); 
+    bbalance = web3.toDecimal(bbalance);
+    BuyerBalance.value = bbalance;
+
+
+    //填完轉帳金額按下"確認"後開始鎖倉ishuman+makeorder+getOrderData
+    //買方 出現"已付款" && 賣方出現"收到付款" + "觀看鎖倉金額+剩餘時間"
+    //when雙方都按下按鈕確認付款後解鎖(需外部approve)
+    //需要cancel機制
+
+
+    function DoTransaction() {
+        escrow.methods.isHuman().call(); 
+        escrow.methods.makeOrder().call();   
+
+        //看帳戶代幣餘額
+        escrow.methods.balanceOf(address).call();
+        // 更新面板
+
+        escrow.methods.getOrderData().call().then(console.log);
+    }
+
+    function havePayed() {
+        escrow.methods.setPaid().call();
+        //給錢?
+
+        //看帳戶代幣餘額
+        escrow.methods.balanceOf(address).call();
+        // 更新面板?
+
+        escrow.methods.getOrderData().call().then(console.log);
+    }
+
+    function haveComfirmed() {
+        escrow.methods.confirmOrder().call();
+        //解鎖?
+
+        //看帳戶代幣餘額
+        escrow.methods.balanceOf(address).call();
+        // 更新面板?
+
+        escrow.methods.getOrderData().call().then(console.log);
+    }
+
+    function willCancel() {
+        escrow.methods.cancelOrder().call();
+
+        escrow.methods.getOrderData().call().then(console.log);
+    }
+    
+
+    </script> -->
+
+</body>
+
+</html>
