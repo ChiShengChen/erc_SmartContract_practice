@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <!-- <script src="./node_modules/web3/dist/web3.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js" integrity="sha256-nWBTbvxhJgjslRyuAKJHK+XcZPlCnmIAAMixz6EefVk="
+        crossorigin="anonymous"></script>
+
+    <!-- <script type="text/javascript" src="s.js"></script> -->
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Contract Escrow</h1>
+
+        <h2>買家餘額</h2>
+        <h3 id="buyerBalance"></h3>
+        <p></p>
+        <h2>賣家餘額</h2>
+        <h3 id="sellerBalance"></h3>
+        <p></p>
+        <h2>合約餘額</h2>
+        <h3 id="contractBalance"></h3>
+
+        <hr>
+        <label for="name" class="col-lg-2 control-label">
+            賣家帳戶
+        </label>
+        <input id="address1Seller" type="text" readonly>
+
+        <label for="name" class="col-lg-2 control-label">
+            買家帳戶
+        </label>
+        <input id="address1Buyer" type="text" readonly>
+
+        <label for="name" class="col-lg-2 control-label">
+            代幣名稱
+        </label>
+        <input id="TokenName" type="text" value="mw">
+
+        <label for="name" class="col-lg-2 control-label">
+            代幣地址
+        </label>
+        <input id="TokenAddr" type="text">
+
+        <label for="name" class="col-lg-2 control-label">
+            訂單ID
+        </label>
+        <input id="OrderID" type="text">
+
+        <label for="name" class="col-lg-2 control-label">
+            鎖倉金額
+        </label>
+        <input id="LockedAmount" type="number" min=0>
+        <button id="makeOrderBtn" onclick="makeOrder(), timedCount()">
+            makeOrder
+        </button>
+        <hr>
+        <form>
+            <!-- <input type="button" value="開始計時！" onClick="timedCount()"> -->
+            <h3>remaining time(s):</h3>
+            <input type="text" id="txt">
+            <!-- <input type="button" value="停止計時！" onClick="stopCount()"> -->
+        </form>
+
+        <hr>
+
+        <h3>我是買家!</h3>
+        <h2 id=addressBuyerPaid></h2>
+        <!-- only for testing -->
+        <!-- endTesting btns -->
+        <button id="button2" onclick="setPaid()">
+            已付款
+        </button>
+
+        <hr>
+
+        <h3>我是賣家!</h3>
+        <h2 id=addressSellerConfirm></h2>
+        <!-- only for testing -->
+    
+
+        <button id="button3" onclick="confirmOrder()">
+            received comfirm
+        </button>
+
+        <hr>
+        <h3>我要取消訂單</h3>
+       
+
+        <label for="name" class="col-lg-2 control-label">
+            Canceler:
+        </label>
+        <input id="Canceler" type="text">
+
+        <button id="button4" onclick="cancelOrder()">
+            Cancel order
+        </button>
+
+
+        <hr>
+        <h3>OrderData</h3>
+        <label for="name" class="col-lg-2 control-label">
+            請輸入買家或賣家地址取得訂單資料(getOrderData)
+        </label>
+
+        <input id="OrderData" type="text">
+
+        <button id="button4" onclick="getOrderData()">
+            getOrderData
+        </button>
+        <div>
+            <label for="name" class="col-lg-2 control-label">
+                買家地址
+            </label>
+            <div id="_buyer"></div>
+            <label for="name" class="col-lg-2 control-label">
+                賣家地址
+            </label>
+            <div id="_seller"></div>
+            <label for="name" class="col-lg-2 control-label">
+                鎖倉金額
+            </label>
+            <div id="_lockedAmount"></div>
+            <label for="name" class="col-lg-2 control-label">
+                Token名稱
+            </label>
+            <div id="_tokenName"></div>
+            <label for="name" class="col-lg-2 control-label">
+                訂單狀態
+            </label>
+            <div id="_status"></div>
+        </div>
+        <hr>
+
+
+
+        <h3>評價系統</h3>
+        <button id="button4fakeData" onclick="generatefakedata()">產生交易資料</button>
+        <button id="btnbuyer">我是買方</button>
+        <button id="btnseller">我是賣方</button>
+
+        <table id="fakeData" >
+            <tr>
+                <th>購買時間</th>
+                <th>買家地址</th>
+                <th>賣家地址</th>
+                <th>購買幣別</th>
+                <th>得標金額</th>
+                <th>區塊編號</th>
+                <th>訂單狀態</th>
+                <th id="bycmd">買方評價</th>
+                <th id="slcmd">賣方評價</th>
+            </tr>
+           <!--  <tr>
+                <td id="CmdBuyer2SellerTxt">買方評價</td>
+                <td id="CmdBuyer2SellerVal">--</td>
+                <td id="CmdBuyer2Seller">--</td>
+            </tr>
+            <tr>
+                <td id="CmdSeller2BuyerTxt">賣方評價</td>
+                <td id="CmdSeller2BuyerVal">--</td>
+                <td id="CmdSeller2Buyer">--</td>
+            </tr> -->
+        </table>
+
+
+
+
+        <!--         <hr>
+        <hr>
+        <br>
+
+        <h3>locked tokens: </h3>
+        <input id="LockedTokens" type="number">
+        <h3>remaining time: </h3>
+        <input id="RemainingTime" type="number"> -->
+
+
+    </div>
+
+    <div id="commendStaring4B" style="visibility: hidden">
+        <div class="setgrade">  
+        <div class="grade">
+            <span id="getgrade">0.0</span>
+        </div>
+        <div class="star">
+            <ul id="star">
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(1)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(2)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(3)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(4)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(5)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(6)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(7)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(8)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(9)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(10)"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="sure" id="buyercmdbtn">
+            <button id="buyerStarCancel" onclick="starCancel()">取消</button>
+            <button id="buyerStarComfirm"  onclick="buyerStaring()">確定</button>
+        </div>
+         <div class="sure" id="sellercmdbtn">
+            <button id="sellerStarCancel" onclick="starCancel()">取消</button>
+            <button id="sellerStarComfirm" onclick="sellerStaring()">確定</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- <div id="commendStaring4S" style="visibility: hidden">
+        <div class="setgrade">  
+        <div class="grade">
+            <span id="getgrade">0.0</span>
+        </div>
+        <div class="star">
+            <ul id="star">
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(1)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(2)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(3)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(4)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(5)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(6)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(7)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(8)"></a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="halfStar(9)"></a>
+                    <a href="javascript:void(0)" onclick="halfStar(10)"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="sure">
+            <button id="sellerStarCancel" onclick="starCancel()">取消</button>
+            <button id="sellerStarComfirm" onclick="sellerStaring()">確定</button>
+        </div>
+      </div>
+    </div> -->
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <!-- timer要用 -->
+    <!--     <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    <script type='text/javascript' language='javascript'>
+        google.load('jquery', '1.4.3');
+    </script> -->
+
+    <script type="text/javascript">
+        // $(document).ready(function () {
+        if (typeof web3 !== 'undefined') {
+            console.log("Using web3 detected from external source like Metamask");
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            console.log("Using localhost");
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+        let eth = web3.eth;
+        let tokenContract = new web3.eth.Contract([{
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [{
+                    "name": "",
+                    "type": "string"
+                }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [{
+                    "name": "success",
+                    "type": "bool"
+                }],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [{
+                    "name": "",
+                    "type": "uint256"
+                }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [{
+                    "name": "success",
+                    "type": "bool"
+                }],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [{
+                    "name": "",
+                    "type": "uint8"
+                }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                    "name": "_owner",
+                    "type": "address"
+                }],
+                "name": "balanceOf",
+                "outputs": [{
+                    "name": "balance",
+                    "type": "uint256"
+                }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                        "name": "_initialAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "_tokenName",
+                        "type": "string"
+                    },
+                    {
+                        "name": "_decimalUnits",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "_tokenSymbol",
+                        "type": "string"
+                    }
+                ],
+                "name": "TokenDemoICO",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [{
+                    "name": "",
+                    "type": "string"
+                }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [{
+                    "name": "success",
+                    "type": "bool"
+                }],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowance",
+                "outputs": [{
+                    "name": "remaining",
+                    "type": "uint256"
+                }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [{
+                        "indexed": true,
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [{
+                        "indexed": true,
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Approval",
+                "type": "event"
+            }
+        ], '0xdcbc260cea77bc52199244bab053322d151643e8');
+
+        let escrow = new web3.eth.Contract(
+            [{
+                    "constant": false,
+                    "inputs": [],
+                    "name": "cancelOrder",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "confirmOrder",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [{
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "makeOrder",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [{
+                        "name": "_newOwner",
+                        "type": "address"
+                    }],
+                    "name": "setOwner",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "setPaid",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "constructor"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [{
+                            "indexed": false,
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "TokenRegister",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [{
+                            "indexed": true,
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_status",
+                            "type": "uint8"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "MakeOrder",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [{
+                            "indexed": true,
+                            "name": "_canceler",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_status",
+                            "type": "uint8"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "CancelOrder",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [{
+                            "indexed": true,
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_orderID",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "_status",
+                            "type": "uint8"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "timestamp",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "ConfirmOrder",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [{
+                            "indexed": true,
+                            "name": "old",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": true,
+                            "name": "current",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "OwnerChanged",
+                    "type": "event"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "getContractAddress",
+                    "outputs": [{
+                        "name": "",
+                        "type": "address"
+                    }],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "getOrderData",
+                    "outputs": [{
+                            "name": "_seller",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_buyer",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_tokenName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "_tokenAddr",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_lockedAmount",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "_lockedTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "name": "_status",
+                            "type": "uint8"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "ORDER_SESSION",
+                    "outputs": [{
+                        "name": "",
+                        "type": "uint256"
+                    }],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "orderIsExisted",
+                    "outputs": [{
+                        "name": "",
+                        "type": "bool"
+                    }],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [{
+                        "name": "",
+                        "type": "address"
+                    }],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ], '0x2eb371b167643a467cd614226a08f76405dea23e');
+
+        console.log(escrow)
+        eth.getAccounts().then(accounts => {
+
+            $("#address1Seller").val(accounts[0]);
+            $("#address1Buyer").val(accounts[1]);
+            $('#addressSellerConfirm').text(accounts[0])
+            $('#addressBuyerPaid').text(accounts[1])
+
+            tokenContract.methods.balanceOf(accounts[0]).call().then(value => {
+                $("#buyerBalance").text(value / 1e5 + ' KTT');
+            })
+
+            tokenContract.methods.balanceOf(accounts[1]).call().then(value => {
+                $("#sellerBalance").text(value / 1e5 + ' KTT');
+            })
+
+            tokenContract.methods.balanceOf('0x6863ee15d75f656aa8f8b00a0e399cf115d53f37').call().then(value => {
+                $("#contractBalance").text(value / 1e5 + ' KTT');
+            })
+        })
+
+        tokenContract.get
+
+        var address;
+
+        function makeOrder() {
+            let seller = $('#address1Seller').val();
+            let buyer = $('#address1Buyer').val();
+            let tokenName = $('#TokenName').val();
+            let tokenAddr = $('#TokenAddr').val();
+            let orderID = $('#OrderID').val();
+            let lockedAmount = $('#LockedAmount').val() * 1e5;
+
+            var address = $('#address1Seller').val();
+
+
+            escrow.methods.makeOrder(buyer, tokenName, tokenAddr, orderID, lockedAmount).send({
+                    // from: $("#address1Seller").val(),
+                    from: address,
+                    gas: 300000
+                })
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+                .on('error', err => {
+                    console.log(err);
+                })
+
+
+            // escrow.methods.getOrderData().call(
+            // {
+            //     from: $("#address1Seller").val(),
+            //     gas: 3000000
+            // })
+            console.log("exe to here~testing~")
+        }
+
+
+        //倒數7200秒
+        var c = 7200
+        var t
+
+        function timedCount() {
+            document.getElementById('txt').value = c
+            c = c - 1
+            t = setTimeout("timedCount()", 1000)
+        }
+
+        function stopCount() {
+            c = 0;
+            setTimeout("document.getElementById('txt').value=0", 0);
+            clearTimeout(t);
+        }
+
+        function cancelOrder() {
+            let canceler = $('#Canceler').val();
+            let seller = $('#address1Seller').val();
+            let tokenName = $('#TokenName').val();
+            let tokenAddr = $('#TokenAddr').val();
+            let orderID = $('#OrderID').val();
+            let lockedAmount = $('#LockedAmount').val();
+
+            console.log(canceler, seller, tokenName, tokenAddr, orderID)
+
+            escrow.methods.cancelOrder().send({
+                    from: $("#Canceler").val(),
+                    // from: address,
+                    gas: 300000
+                })
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+
+                .on('error', err => {
+                    console.log(err);
+                })
+        }
+
+
+        function setPaid() {
+            // console.log("454dfdfr")
+            // console.log(order.status)
+
+            escrow.methods.setPaid().send({
+                    from: $("#address1Buyer").val(),
+                    // from: address,
+                    gas: 300000
+                })
+
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+
+                .on('error', err => {
+                    console.log(err);
+                })
+
+            // console.log(order.status)
+        }
+
+
+        function confirmOrder() {
+            let seller = $('#address1Seller').val();
+            let buyer = $('#address1Buyer').val();
+            let tokenName = $('#TokenName').val();
+            let tokenAddr = $('#TokenAddr').val();
+            let orderID = $('#OrderID').val();
+            let lockedAmount = $('#LockedAmount').val();
+
+            console.log(seller, buyer, tokenName, tokenAddr, orderID)
+
+            escrow.methods.confirmOrder().send({
+                    from: $("#address1Seller").val(),
+                    // from: address,
+                    gas: 300000
+                })
+                .on('transactionHash', hash => {
+                    console.log(hash);
+                })
+                .on('receipt', receipt => {
+                    console.log(receipt)
+                })
+                .on('confirmation', (number, receipt) => {
+                    // console.log(number, receipt)
+                })
+
+                .on('error', err => {
+                    console.log(err);
+                })
+        }
+
+
+
+
+        function switch2Owner() {
+            // var address =  eth.getAccounts(accounts[0]);
+            var address = $('#address1Seller').val();
+            console.log(address);
+
+        }
+
+
+        function switch2Buyer() {
+
+            // var address =  eth.getAccounts(eth.accounts[1]);
+            var address = $('#address1Buyer').val();
+            console.log(address);
+
+        }
+
+
+        function getOrderData() {
+
+            escrow.methods.getOrderData().call({
+                from: $('#OrderData').val()
+            }).then(data => {
+                console.log(data);
+                $('#_buyer').text(data._buyer);
+                $('#_seller').text(data._seller);
+                $('#_lockedAmount').text(data._lockedAmount / 1e5);
+                $('#_tokenName').text(data._tokenName);
+
+                let msg = '';
+                switch (data._status) {
+                    case '0':
+                        msg = '已取消';
+                        break;
+                    case '1':
+                        msg = '交易確認';
+                        break;
+                    case '3':
+                        msg = '賣家已付款';
+                        break;
+                    case '7':
+                        msg = '買家以確認，交易完成';
+                        break;
+
+                }
+                $('#_status').text(msg);
+            })
+
+        }
+
+          // comment system
+          function generatefakedata() {
+
+             var num = document.getElementById("fakeData").rows.length;
+             var Tr = document.getElementById("fakeData").insertRow(num);
+
+              
+             var dt = new Date();
+             var utcDate = dt.toUTCString();
+             tradetime = Tr.insertCell(Tr.cells.length);     
+             // tradetime.innerHTML= Math.floor(Date.now() / 1000);
+             tradetime.innerHTML = utcDate;
+             
+             buyerAddr = Tr.insertCell(Tr.cells.length);
+             buyerAddr.innerHTML = '0xdcbc260cea77bc52199244bab053322d151643e8';
+             
+             sellerAddr = Tr.insertCell(Tr.cells.length);
+             sellerAddr.innerHTML = '0x6863ee15d75f656aa8f8b00a0e399cf115d53f37';
+
+             tokenType = Tr.insertCell(Tr.cells.length);
+             tokenType.innerHTML = 'GDP';
+
+             tradeAmount = Tr.insertCell(Tr.cells.length);
+             tradeAmount.innerHTML = '666';
+
+             blockNum = Tr.insertCell(Tr.cells.length);
+             blockNum.innerHTML = '3104';
+
+             tradeStatus = Tr.insertCell(Tr.cells.length);
+             tradeStatus.innerHTML = '已付款';
+
+             buyercmd = Tr.insertCell(Tr.cells.length);
+             buyercmd.innerHTML = "</br><input id=\"bs\" name=\"vbtn\" type=\"button\" onClick=\"cmdValue4buyer()\" value=\"評價\"><\/input>" ;
+
+             sellercmd = Tr.insertCell(Tr.cells.length);
+             sellercmd.innerHTML = "</br><input id=\"ss\" name=\"vbtn\" type=\"button\" onClick=\"cmdValue4seller()\" value=\"評價\"><\/input>" ;
+
+          }
+
+
+          // function btnCmd() {
+          //   alert("abc");
+          // }
+
+          // function addNewBtn() {
+          //   document.getElementById("fakeData").innerHTML += "</br><input name=\"評價\" type=\"button\" onClick=\"clic()\" value=\"評價\"><\/input>";
+          // }
+
+
+           // star
+           k = 0;
+
+          function halfStar(x) {
+            var star = document.getElementById('star');
+            var items = star.getElementsByTagName("li");
+            x = parseInt(x) - 1;
+            var tem = -1;
+            for(var i = 0; i < items.length; i++) {
+                if(x > i*2) {
+                    items[i].style.background = "url('img/1.png') no-repeat";
+                    items[i].style.backgroundSize = "100% 100%";
+                } else {
+                    if(tem == -1) {
+                        tem = i;
+                    } 
+                    items[i].style.background = "url('img/0.png') no-repeat";
+                    items[i].style.backgroundSize = "100% 100%";
+                }
+            }
+            if(x == parseInt(tem)*2) {
+                items[tem].style.background = "url('img/hf.png') no-repeat";
+                items[tem].style.backgroundSize = "100% 100%";
+            }
+            document.getElementById('getgrade').innerHTML = parseInt(x)+1+'.0';
+            k = parseInt(x)+1+'.0';
+        }
+
+
+          function cmdValue4buyer() {
+
+            document.getElementById("commendStaring4B").style.visibility="visible";
+            
+            document.getElementById("sellercmdbtn").style.visibility="hidden";
+            document.getElementById("buyercmdbtn").style.visibility="visible";
+
+          }
+
+
+          function buyerStaring() {
+
+            document.getElementById("commendStaring4B").style.visibility="hidden";
+            document.getElementById("bs").style.visibility="hidden";
+            document.getElementById("buyercmdbtn").style.visibility="hidden";
+            
+            // var num = document.getElementById("fakeData").rows.length;
+            // var Tr = document.getElementById("fakeData").insertRow(num);
+            // buyercmd = Tr.insertCell(Tr.cells.length);
+            // buyercmd = Tr.insertCell(Tr.cells.length);
+
+
+            // var buyercmd = document.getElementById('fakeData').insertCell(7);
+            // document.getElementById("").innerHTML = k;
+
+            var bnum = fakeData.rows.length - 1;
+            console.log(bnum);
+            document.getElementById('fakeData').rows[bnum].cells[7].innerHTML = k;
+
+            k = 0;
+
+          }
+
+
+          function cmdValue4seller() {
+
+            document.getElementById("commendStaring4B").style.visibility="visible";
+            document.getElementById("buyercmdbtn").style.visibility="hidden";
+            document.getElementById("sellercmdbtn").style.visibility="visible";
+
+          }
+
+
+
+          function sellerStaring() {
+
+            document.getElementById("commendStaring4B").style.visibility="hidden";
+            document.getElementById("ss").style.visibility="hidden";
+            document.getElementById("sellercmdbtn").style.visibility="hidden";
+
+            
+            var bnum = fakeData.rows.length - 1;
+            console.log(bnum);
+            document.getElementById('fakeData').rows[bnum].cells[8].innerHTML = k;
+
+            k = 0;
+
+          }
+
+
+
+          function starCancel() {
+
+            document.getElementById("commendStaring4B").style.visibility="hidden";
+            // document.getElementById("commendStaring4S").style.visibility="hidden";
+
+          }
+
+
+         
+
+
+
+    </script>
+
+
+</body>
+
+</html>
